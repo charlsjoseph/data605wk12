@@ -1,0 +1,23 @@
+---
+title: "Data605wk12"
+author: "Charls Joseph"
+date: "April 21, 2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(RCurl)
+library(car)
+library(knitr)
+options(scipen=5)
+```
+
+## R Markdown
+
+```{r}
+
+who.data <- read.csv(text = getURL("https://raw.githubusercontent.com/akulapa/Akula-DATA605-Week12-HW12/master/who.csv"), header = T, stringsAsFactors = F)
+kable(who.data[sample(nrow(who.data), 20), ], align='l', caption = "Sample 20 rows", row.names=FALSE)
+
+```
