@@ -8,7 +8,6 @@ output: html_document
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 library(RCurl)
-library(car)
 library(knitr)
 options(scipen=5)
 ```
@@ -17,7 +16,8 @@ options(scipen=5)
 
 ```{r}
 
-who.data <- read.csv(text = getURL("https://raw.githubusercontent.com/akulapa/Akula-DATA605-Week12-HW12/master/who.csv"), header = T, stringsAsFactors = F)
+who.data <- read.csv(text = getURL("https://raw.githubusercontent.com/charlsjoseph/data605wk12/master/who.csv"), header = T, stringsAsFactors =F)
+
 kable(who.data[sample(nrow(who.data), 20), ], align='l', caption = "Sample 20 rows", row.names=FALSE)
 
 ```
