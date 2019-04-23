@@ -16,8 +16,126 @@ options(scipen=5)
 
 ```{r}
 
-who.data <- read.csv(text = getURL("https://raw.githubusercontent.com/charlsjoseph/data605wk12/master/who.csv"), header = T, stringsAsFactors =F)
+who_data <- read.csv(text = getURL("https://raw.githubusercontent.com/charlsjoseph/data605wk12/master/who.csv"), header = T, stringsAsFactors =F)
 
-kable(who.data[sample(nrow(who.data), 20), ], align='l', caption = "Sample 20 rows", row.names=FALSE)
+kable(who_data[sample(nrow(who_data), 10), ], align='l', row.names=FALSE)
 
 ```
+
+```{r}
+summary(who_data)
+```
+
+### Qn1.  Provide a scatterplot of LifeExp~TotExp, and run simple linear regression. Do not transform the variables. Provide and interpret the F statistics, R^2, standard error,and p-values only. Discuss whether the assumptions of simple linear regression met.
+
+```{r}
+who.lm <- lm(LifeExp ~ TotExp, data = who_data)
+plot(who_data$TotExp, who_data$LifeExp, xlab = 'Total Expenditure - $', ylab = 'Average Life Expectancy- in Years', main='Avg. Life Expectancy Vs. Expenditure')
+abline(who.lm, col="red")
+
+```
+
+### The scatter plot doesnt fit properly into the linear line. It shows the expenditure is constant until the age 70-75 and slowly increases beyond 70. 
+
+Lets find the summary of linear regression and analyze the key parameters. 
+
+
+```{r}
+
+summary(who.lm)
+```
+Regression model 
+
+$$ Avg Life Expectancy=64.75337453+0.00006297∗Total Expenditure $$
+The model explains on every unit of increase in Total expenditure, the life expenditure goes up by 0.00006297.
+
+```{r}
+
+plot(who.lm, which=c(1,1))
+
+```
+
+The resduals are not scattererd, but having an unsual pattern which tells that relation doesnt hold the linear behaviour. 
+P-value is very less which explains there is a strong relation between LifeExp and TotExp.
+Adjusted R^2 and R^2 is very less which explains the totalExp is not only an explanatory variable and model can be possibly more accurate or better. 
+
+
+### 2. Raise life expectancy to the 4.6 power (i.e., LifeExp^4.6). Raise total expenditures to the 0.06 power (nearly a log transform, TotExp^.06). Plot LifeExp^4.6 as a function of TotExp^.06, and r re-run the simple regression model using the transformed variables. Provide and interpret the F statistics, R^2, standard error, and p-values. Which model is “better?”
+
+```{r}
+#raise total expenditure to the power of 0.06
+who_data$TotExp_1 <- (who_data$TotExp)^0.06
+
+#raise life expectancy to the power of 4.6
+who_data$LifeExp_1 <- (who_data$LifeExp)^4.6
+
+#build new linear model
+who_1.lm <- lm(LifeExp_1 ~ TotExp_1, data = who_data)
+plot(who_data$TotExp_1, who_data$LifeExp_1, xlab = 'Total Expenditure(in US Dollars) raised to 0.06', ylab = 'Average Life Expectancy(in Years) raised to 4.6', main='Avg. Life Expectancy Vs. Expenditure')
+abline(who_1.lm, col="red")
+      
+```
+
+This explains a better linear relation. Lets check the model key paramaters. 
+```{r}
+summary(who_1.lm)
+```
+Regression model is 
+
+$$LifeExp1=−736527909+620060216∗TotExp1 $$
+
+
+
+```{r}
+plot(who_1.lm, which=c(1,1))
+
+```
+
+
+The residual looks to be scatter and model looks to follow the linear pattern. 
+Adjusted R^2 and R^2 looks to be closer to 1 and better than previous model. 
+
+### 3. Using the results from 2, forecast life expectancy when TotExp^.06 =1.5. Then forecast life expectancy when TotExp^.06=2.5.
+
+```{r}
+result1 <- (-736527909 + (620060216 * 1.5))^(1/4.6)
+result2 <- (-736527909 + (620060216 * 2.5))^(1/4.6)
+result1
+result2
+```
+
+Estimated life expectancy is 63.31153 years when TotExp(0.06) is 1.5.
+Estimated life expectancy is 86.50645 years when TotExp(0.06) is 2.5.
+
+### 4. Build the following multiple regression model and interpret the F Statistics, R^2, standard error, and p-values. How good is the model? LifeExp = b0+b1 x PropMd + b2 x TotExp +b3 x PropMD x TotExp
+
+
+```{r}
+who_2.lm <- lm(LifeExp ~ PropMD + TotExp + PropMD * TotExp, data = who_data)
+summary(who_2.lm)
+
+```
+Regression model is 
+$$
+Average Life Expectancy=62.77270326+1497.49395252×PropMD+0.00007233×TotExp−0.00602569×PropMD∗TotExp $$
+
+
+
+p-Value for PropMD, TotExp and PropMD * TotExp are highly relevant to estimate average life expectancy. 
+R2 and Adj. R2 values decreased compared to earlier 
+
+###5. Forecast LifeExp when PropMD=.03 and TotExp = 14. Does this forecast seem realistic? Why or why not?
+
+```{r}
+TotExp = 14
+PropMD = 0.03
+forcast.life.exp = 62.77270326 + (1497.49395252 * PropMD) + (0.00007233 * TotExp) - (0.00602569 * PropMD * TotExp)
+forcast.life.exp
+
+
+```
+
+
+The result doesnt looks to be realistic. This could be due to in-efficiency of the model variables.
+
+
